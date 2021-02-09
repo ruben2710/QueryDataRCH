@@ -3,7 +3,8 @@ require([
         "esri/map",
         "esri/layers/ArcGISDynamicMapServiceLayer",
         "esri/layers/FeatureLayer",
-
+        "esri/toolbars/draw",
+        "esri/graphic",
         "esri/symbols/SimpleFillSymbol",
         "esri/symbols/SimpleLineSymbol",
         "esri/symbols/SimpleMarkerSymbol",
@@ -26,7 +27,7 @@ require([
         "dijit/layout/BorderContainer",
         "dijit/layout/ContentPane",
         "dijit/form/Button"],
-    function (Map, ArcGISDynamicMapServiceLayer, FeatureLayer,
+    function (Map, ArcGISDynamicMapServiceLayer, FeatureLayer, Draw, Graphic,
               SimpleFillSymbol, SimpleLineSymbol, SimpleMarkerSymbol,
               ready, parser, on, dom,
               Memory, locale,
@@ -94,13 +95,15 @@ require([
             /*
              * Step: Wire the draw tool initialization function
              */
-
+            mapMain.on("load", initDrawTool);
 
             function initDrawTool() {
                 /*
                  * Step: Implement the Draw toolbar
                  */
-
+                var tbDraw = new Draw(mapMain);
+                tbDraw.on("Draw-end", displayPolygon);
+                tbDraw.activate(Draw.POLYGON);
 
             }
 
@@ -118,7 +121,8 @@ require([
                 /*
                  * Step: Construct and add the polygon graphic
                  */
-
+                var graphicPolygon = new Graphic(geometryInput, tbDrawSymbol);
+                mapMain.graphics.add(graphicPolygon);
 
                 // Call the next function
                 selectQuakes(geometryInput);
